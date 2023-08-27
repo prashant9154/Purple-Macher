@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"ws/internal/handlers"
 )
 
@@ -14,7 +15,11 @@ func main() {
 
 	log.Println("Staring web server on port 8080")
 
-	err := http.ListenAndServe(":8080", mux)
+	port := os.Getenv("PORT")
+	if port == ""{
+		port = "3000"
+	}
+	err := http.ListenAndServe("0.0.0.0:%d"+port, mux)
 
 	if err != nil {
 		log.Printf("error in ListenAndServe: %v \n", err)
