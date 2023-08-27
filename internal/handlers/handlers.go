@@ -105,7 +105,10 @@ func ListenForWs(conn *WebSocketConnection) {
 			person := payload.Person
 
 			// Insert data into PostgreSQL
-			db, err := sql.Open("postgres", "user=postgres dbname=matcher sslmode=disable")
+
+			// connectionString := "postgresql://postgres:hBcbrWa3PQhWgQ9wPpnc@containers-us-west-99.railway.app:6589/railway"
+			connectionString := "user=postgres password=hBcbrWa3PQhWgQ9wPpnc host=containers-us-west-99.railway.app port=6589 dbname=railway sslmode=disable"
+			db, err := sql.Open("postgres", connectionString)
 			if err != nil {
 				log.Fatal(err)
 			}
