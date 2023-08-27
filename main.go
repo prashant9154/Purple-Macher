@@ -14,7 +14,7 @@ func main() {
 
 	log.Println("Staring web server on port 8080")
 
-	err := http.ListenAndServe("0.0.0.0:8080", mux)
+	err := http.ListenAndServe(":8080", mux)
 
 	if err != nil {
 		log.Printf("error in ListenAndServe: %v \n", err)
