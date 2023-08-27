@@ -33,7 +33,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	log.Println("Render Home")
 	err := renderPage(w, "home.hbs", nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error in rendering Home page: %v \n", err)
 	}
 }
 
@@ -66,7 +66,7 @@ type WsPayload struct {
 func WsEndpoint(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgradeConnection.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error in connection upgrade: %v \n", err)
 	}
 
 	log.Println("Client connected to endpoint")
@@ -99,7 +99,7 @@ func ListenForWs(conn *WebSocketConnection) {
 	for {
 		err := conn.ReadJSON(&payload)
 		if err != nil {
-			// do nothing
+			log.Println(err)
 		} else {
 			username := payload.Username
 			message := payload.Message
@@ -111,7 +111,7 @@ func ListenForWs(conn *WebSocketConnection) {
 			connectionString := "user=postgres password=hBcbrWa3PQhWgQ9wPpnc host=containers-us-west-99.railway.app port=6589 dbname=railway sslmode=disable"
 			db, err := sql.Open("postgres", connectionString)
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("Error in connecting to the database: %v \n", err)
 			}
 			defer db.Close()
 
@@ -121,7 +121,7 @@ func ListenForWs(conn *WebSocketConnection) {
 				return
 			}
 
-			fmt.Printf("Inserted: %s - %s\n", username, message)
+			log.Printf("Inserted: %s - %s\n", username, message)
 
 			payload.Conn = *conn
 			wsChan <- payload
@@ -132,6 +132,7 @@ func ListenForWs(conn *WebSocketConnection) {
 // ListenToWsChannel is a goroutine that waits for an entry on the wsChan, and handles it according to the
 // specified action
 func ListenToWsChannel() {
+	log.Println("Entered in ListenToWsChannel")
 	var response WsJsonResponse
 
 	for {
