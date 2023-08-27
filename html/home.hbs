@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/notie/4.3.1/notie.min.css"
+        integrity="sha512-UrjLcAek5jbj1vwGbXkviPHtgSNVNQCedX7cBIMDdSI2iZtUcZcoTh2Sqc8R9mVcijOjFUi1IlxhfrE1uWaIog=="
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style>
+        .chatbox {
+            outline: 1px solid silver;
+            min-height: 160px;
+            max-height: 200px;
+            padding: 0.5em;
+            overflow: auto;
+        }
+
+        .btn-custom {
+            background-color: #A8555E;
+            color: white;
+            height: 40px;
+            width: 100px;
+            border-radius: 0;
+        }
+        .btn-custom:hover{
+            background-color: #741e28e5;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bg-blur {
+            background-color: rgba(253, 252, 252, 0.509);
+            /* Fallback color */
+            font-weight: medium;
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        ul {
+            --icon-space: 1.3em;
+            list-style: none;
+            padding: 0;
+        }
+
+        .online-list {
+            padding-left: var(--icon-space);
+        }
+
+        .online-list:before {
+            content: "\f007";
+            /* FontAwesome Unicode */
+            font-family: FontAwesome;
+            font-size: large;
+            display: inline-block;
+            margin-left: 1em;
+            width: var(--icon-space);
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-image" style="background-image: url('static/images/bg.jpg'); background-repeat: no-repeat;  background-size: cover; 
+            height: 100vh">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-6">
+                    <h1 class="mt-3">Purple Matcher</h1>
+                    <hr>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-2"></div>
+                <div class="col-md-6 bg-blur">
+                    <div class="form-group mb-3">
+                        <label for="username">Username:</label>
+                        <div id="status" class="float-end"></div>
+                        <input type="text" name="username" id="username" class="form-control mt-1" autocomplete="off">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="person"" >Person:</label>
+                    <select name=" person" id="person" class="form-control mt-1">
+                            <option value="NA" selected disabled>Select Person</option>
+                            <option value="Areeb">Areeb</option>
+                            <option value="Prashant">Prashant</option>
+                            <option value="Pratika">Pratika</option>
+                            <option value="Nikita">Nikita</option>
+                            <option value="Ritik">Ritik</option>
+                            <option value="Anushka">Anushka</option>
+                            <option value="Durgesh">Durgesh</option>
+                            <option value="Megha">Megha</option>
+                            <option value="Vivek">Vivek</option>
+                            <option value="Rohan">Rohan</option>
+                            <!-- Add more options as needed -->
+                            </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="message">Purple Name:</label>
+                        <input type="text" name="message" id="message" class="form-control mt-1" autocomplete="off">
+                    </div>
+
+                    <hr>
+                    <a href="javascript:void(0);" class="btn btn-custom mb-3" id="sendBtn">Send</a>
+
+                    <input type="hidden" name="action" id="action">
+
+                    
+
+                    <div id="output" class="chatbox mt-5">
+
+                    </div>
+                    <a href="javascript:void(0);" class="btn btn-custom mt-3" id="matchBtn">Check</a>
+
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-3 bg-blur">
+                    <h3 class="text-center mb-4">Connected People</h3>
+
+                    <ul id="online_users">
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/notie/4.3.1/notie.min.js"
+    integrity="sha512-NHRCwRf2LnVSlLDejCA9oS3fG3/FLSQIPCjAWl3M7tVi5wszwr6FxkjotWnQDXLE+aLKcxRrzFDNEgXj9nvkPw=="
+    crossorigin="anonymous"></script>
+
+<script src="/static/reconnecting-websocket.min.js"></script>
+
+<script>
+    let socket = null;
+    let o = document.getElementById("output");
+    let userField = document.getElementById("username");
+    let personField = document.getElementById("person");
+    let messageField = document.getElementById("message");
+    let sendButton = document.getElementById("sendBtn");
+    let matchButton = document.getElementById("matchBtn");
+
+    let personMessageMap = new Map();
+
+    window.onbeforeunload = function () {
+        console.log("Leaving");
+        let jsonData = {};
+        jsonData["action"] = "left";
+        socket.send(JSON.stringify(jsonData))
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws", null, { debug: true, reconectInterval: 3000 });
+
+        const offline = `<span class="badge bg-danger">Not connected</span>`
+        const online = `<span class="badge bg-success">Connected</span>`
+        let statusDiv = document.getElementById("status");
+
+        socket.onopen = () => {
+            console.log("Successfully connected");
+            statusDiv.innerHTML = online;
+        }
+
+        socket.onclose = () => {
+            console.log("connection closed");
+            statusDiv.innerHTML = offline;
+        }
+
+        socket.onerror = error => {
+            console.log("there was an error");
+            statusDiv.innerHTML = offline;
+        }
+
+        socket.onmessage = msg => {
+            let data = JSON.parse(msg.data);
+            console.log("Action is", data.action);
+
+            switch (data.action) {
+                case "list_users":
+                    let ul = document.getElementById("online_users");
+                    while (ul.firstChild) ul.removeChild(ul.firstChild);
+
+                    if (data.connected_users?.length > 0) {
+                        data.connected_users.forEach(function (value) {
+                            let li = document.createElement("li");
+                            li.classList.add("online-list")
+                            li.appendChild(document.createTextNode(value));
+                            ul.appendChild(li);
+                        })
+                    }
+                    break;
+
+                case "broadcast":
+                    if (data.username != "" && data.person != "" && data.message != "") {
+                        // Check if the key already exists in the map
+                        if (personMessageMap.has(data.person)) {
+                            // If the key exists, push the new message to the existing array
+                            personMessageMap.get(data.person).push(data.message.toLowerCase());
+                        } else {
+                            // If the key doesn't exist, create a new array with the message
+                            personMessageMap.set(data.person, [data.message.toLowerCase()]);
+                        }
+                        console.log(personMessageMap)
+                    }
+                    o.innerHTML = o.innerHTML + data.username + ":" + "guessed!" + "<br>";
+                    o.scrollTop = o.scrollHeight;
+
+                    break;
+            }
+        }
+
+        userField.addEventListener("change", function () {
+            let jsonData = {};
+            jsonData["action"] = "username";
+            jsonData["username"] = this.value;
+            socket.send(JSON.stringify(jsonData));
+        })
+
+        messageField.addEventListener("keydown", function (event) {
+            if (event.code === "Enter") {
+                if (!socket) {
+                    console.log("no connection");
+                    return false
+                }
+
+                if ((userField.value === "") || (messageField.value === "")) {
+                    errorMessage("Fill out username and message!");
+                    return false;
+                } else {
+                    sendMessage()
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        })
+
+        sendButton.addEventListener("click", function () {
+            if ((userField.value === "") || (messageField.value === "")) {
+                errorMessage("Fill out username and message!");
+                return false;
+            } else {
+                sendMessage()
+            }
+        })
+
+        matchButton.addEventListener("click", function () {
+            if (personMessageMap.size >= 1) {
+                const valuesArray = personMessageMap.get(personField.value)
+                const lastTwoValues = valuesArray.slice(-2);
+                let compare = ""
+
+                for (const value of lastTwoValues) {
+                    if (compare === "") {
+                        console.log(value);
+                        compare = value;
+                    } else if (compare !== value) {
+                        console.log(value);
+                        o.innerHTML = o.innerHTML + "<span style='color: red; font-weight: bold;'>Not Matched! <br></span>";
+                        o.scrollTop = o.scrollHeight;
+                        return
+                    }
+                }
+
+                o.innerHTML = o.innerHTML + "<span style='color: green; font-weight: bold;'>Matched! <br></span>";
+                o.scrollTop = o.scrollHeight;
+            }
+            console.log(personMessageMap.size)
+        })
+    })
+
+    function sendMessage() {
+        let jsonData = {};
+        jsonData["action"] = "broadcast";
+        jsonData["username"] = userField.value;
+        jsonData["person"] = personField.value;
+        jsonData["message"] = messageField.value;
+        socket.send(JSON.stringify(jsonData))
+        messageField.value = "";
+    }
+
+    function errorMessage(msg) {
+        notie.alert({
+            type: 'error',
+            text: msg,
+        })
+    }
+
+</script>
+
+</html>
