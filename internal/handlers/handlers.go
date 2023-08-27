@@ -31,7 +31,7 @@ var upgradeConnection = websocket.Upgrader{
 // Home renders the home page
 func Home(w http.ResponseWriter, r *http.Request) {
 	log.Println("Render Home")
-	err := renderPage(w, "home.hbs", nil)
+	err := renderPage(w, "home.htm", nil)
 	if err != nil {
 		log.Println("Error in rendering Home page: %v \n", err)
 	}
