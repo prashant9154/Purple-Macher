@@ -166,7 +166,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        socket = new ReconnectingWebSocket("ws://purple-macher-production.up.railway.app/ws", null, { debug: true, reconectInterval: 3000 });
+        socket = new ReconnectingWebSocket("wss://purple-macher-production.up.railway.app/ws", null, { debug: true, reconectInterval: 3000 });
 
         const offline = `<span class="badge bg-danger">Not connected</span>`
         const online = `<span class="badge bg-success">Connected</span>`
