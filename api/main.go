@@ -14,5 +14,5 @@ func main() {
 
 	log.Println("Staring web server on port 8080")
 
-	_ = http.ListenAndServe(":8080", mux)
+	_ = http.ListenAndServe("0.0.0.0:8080", mux)
 }

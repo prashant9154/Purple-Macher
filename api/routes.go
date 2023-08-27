@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/bmizerany/pat"
 	"net/http"
 	"ws/internal/handlers"
+
+	"github.com/bmizerany/pat"
 )
 
 // routes defines the application routes
